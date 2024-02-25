@@ -1,1 +1,2 @@
-ReMemory Horror project
+Курсова робота 25 группа
+Horror Demo game
