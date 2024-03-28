@@ -16,6 +16,7 @@ class RM_API APlayerCharacter : public AMainCharacter
 {
 	GENERATED_BODY()
 
+public:
 		APlayerCharacter();
 	UPROPERTY(VisibleAnywhere) // Макрос, щоб бачити та редагувати в BP.
 		USpringArmComponent* SpringArm; // "Штатив" для камери p iм'ям SpringArm.
