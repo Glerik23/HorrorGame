@@ -131,7 +131,6 @@ void APlayerCharacter::Tick(float DeltaTime) // Дii, якi вiдбуваются за 1 iгрови
 				CurrentStamina = 100; // На випадок, якщо сумма загального значення витривалостi, та вiдновлення будуть бiльше 100, встановити загальному значенню 100.
 			}
 			Stamina = CurrentStamina; // Повернути значення.
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Stamina Increased %f"), Stamina));
 		}
 	}
 
