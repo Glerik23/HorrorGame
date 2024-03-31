@@ -17,11 +17,54 @@ class RM_API APlayerCharacter : public AMainCharacter
 	GENERATED_BODY()
 
 public:
-		APlayerCharacter();
+	APlayerCharacter();
+
 	UPROPERTY(VisibleAnywhere) // Макрос, щоб бачити та редагувати в BP.
-		USpringArmComponent* SpringArm; // "Штатив" для камери p iм'ям SpringArm.
+		USpringArmComponent* SpringArm; // "Штатив" для камери з iм'ям SpringArm.
 
 	UPROPERTY(VisibleAnywhere) // Макрос, щоб бачити та редагувати в BP.
 		UCameraComponent* Camera; // Камера.
 
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* MyPlayerInput) override; // [Virtual] Оголошення функцii SetupPlayerInputComponent з class Pawn | оголошення MyPlayerInput з успадкуванням class UInputComponent | [override] перевезначення методу у class-спiдкоэмцi.
+
+	// Перемiщення вперед/назад.
+	void MoveForwardBackward(float Value); // Функцiя перемiщененя вперед/назад.
+
+	// Перемiщення влiво/вправо.
+	void MoveRightLeft(float Value); // Функцiя перемiщення вправо/влiво.
+
+	// Стрибок
+	void Jump(); // Функцiя стрибок.
+	void StopJump(); // Функцiя зупинки стрибка.
+
+	// Бiг
+	void Sprint(); // Функцiя бiгу.
+	void StopSprint(); // Функцiя зупинки бiгу.
+
+	bool bIsSprint; // Бiжить/не бiжить.
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stamina", meta = (ClampMin = "0", ClampMax = "100")) // Вiдображення Stamina в Default в BP | Можливiсть виставлення в UE вiд 0 до 100.
+	float Stamina = 100.0f; // Кількість витривалості.
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stamina") // Вiдображення PlusStamina в Default в BP.
+	float PlusStamina = 1.0f; // Кількість дадавання до CurrentStamina при при ходьбі.
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stamina") // Вiдображення MinusStamina в Default в BP.
+	float MinusStamina = 1.0f; // Кількість забирання від CurrentStamina при бігу.
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stamina") // Вiдображення CurrentStamina в Default в BP.
+	float CurrentStamina; // Змiнна яка зберiгаэ значення стамiни.
+
+	void IncreaseStamina(); // Функцiя для додавання витривалостi.
+	void DeacreaseStamina(); // Функцiя для зменшення витривалості.
+
+
+
+
+	// ---------
+	/*
+	void Crouch();
+	void StopCrouch();
+	*/
 };
