@@ -109,6 +109,34 @@ void APlayerCharacter::DecreaseStamina() // функцiя вiднiмання витривалостi.
 
 void APlayerCharacter::IncreaseStamina() // функцiя додавання витривалостi.
 {
-	CurrentStamina = Stamina + PlusStamina; // CurrentStamina(значення кiлькостi витривалостi) = Stamina(установленна кiлькiсть наприклад - 100) + PlusStamina(установленна кiлькiсть наприклад - 1) | Формула для додавання витривалостi.
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Stamina Increased %f"), Stamina)); // Виклик повiдомлення (-1 - постiйно, коли йде виклик ScreenDebugMessage), (5.f - скiлки секунд буде висіти повiдомлення), (FColor::Green - зеленим кольором).
+	if (bIsSprint == false) {
+		CurrentStamina = Stamina + PlusStamina;// CurrentStamina(значення кiлькостi витривалостi) = Stamina(установленна кiлькiсть наприклад - 100) + PlusStamina(установленна кiлькiсть наприклад - 1) | Формула для додавання витривалостi.
+		Stamina = CurrentStamina;
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Stamina Increased %f"), Stamina)); // Виклик повiдомлення (-1 - постiйно, коли йде виклик ScreenDebugMessage), (5.f - скiлки секунд буде висіти повiдомлення), (FColor::Green - зеленим кольором).
+	}
+}
+
+void APlayerCharacter::Tick(float DeltaTime) // Дii, якi вiдбуваются за 1 iгровий Tick.
+{
+	// Вiднновлення витривалостi, при бiгi.
+	if (bIsSprint == true && Stamina != 0.f) { // Якщо натиснута кнопка бiгу та Stamina не дорiвнюэ 0, тодi зменшувати витривалiсть.
+		DecreaseStamina();
+	}
+	else {
+		if (bIsSprint == false && Stamina < 100) { // Якщо кнопка бiгу не натиснута, та витривалiсть меньше 100
+			if (CurrentStamina + PlusStamina <= 100) { // Якщо значення витривалостi + вiдновлення витривалостi не привисять 100 
+				CurrentStamina += PlusStamina; // Додавати витривалiсть до загального значення.
+			}
+			else {// Для запобігання безкінечному відновленню, якщо загальне значення більше 100
+				CurrentStamina = 100; // На випадок, якщо сумма загального значення витривалостi, та вiдновлення будуть бiльше 100, встановити загальному значенню 100.
+			}
+			Stamina = CurrentStamina; // Повернути значення.
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Stamina Increased %f"), Stamina));
+		}
+	}
+
+	if (FMath::IsNearlyZero(Stamina)) { // Якщо Stamina = 0, то припинити бiг.
+		StopSprint();
+	}
+
 }
