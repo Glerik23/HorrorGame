@@ -6,6 +6,7 @@
 #include "MainCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "PlayerCharacter.generated.h"
 
 /**
@@ -47,24 +48,19 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Stamina", meta = (ClampMin = "0", ClampMax = "100")) // Вiдображення Stamina в Default в BP | Можливiсть виставлення в UE вiд 0 до 100.
 	float Stamina = 100.0f; // Кількість витривалості.
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stamina") // Вiдображення PlusStamina в Default в BP.
+	UPROPERTY(EditDefaultsOnly, Category = "Stamina") // Вiдображення PlusStamina в Default в BP(для редагування).
 	float PlusStamina = 1.0f; // Кількість дадавання до CurrentStamina при при ходьбі.
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stamina") // Вiдображення MinusStamina в Default в BP.
+	UPROPERTY(EditDefaultsOnly, Category = "Stamina") // Вiдображення MinusStamina в Default в BP(для редагування).
 	float MinusStamina = 1.0f; // Кількість забирання від CurrentStamina при бігу.
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stamina") // Вiдображення CurrentStamina в Default в BP.
+	UPROPERTY(EditDefaultsOnly, Category = "Stamina") // Вiдображення CurrentStamina в Default в BP(для редагування).
 	float CurrentStamina; // Змiнна яка зберiгаэ значення стамiни.
 
 	void IncreaseStamina(); // Функцiя для додавання витривалостi.
-	void DeacreaseStamina(); // Функцiя для зменшення витривалості.
+	void DecreaseStamina(); // Функцiя для зменшення витривалості.
 
 
-
-
-	// ---------
-	/*
 	void Crouch();
 	void StopCrouch();
-	*/
 };

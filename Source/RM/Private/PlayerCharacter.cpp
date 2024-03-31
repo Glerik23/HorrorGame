@@ -26,20 +26,19 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* MyPlayerInput)
 	// Клавiатура
 	MyPlayerInput->BindAxis("MoveForwardBackward", this, &APlayerCharacter::MoveForwardBackward); // Назначення клавiш W/S (MoveForwardBackward) на перемiщення вперед/назад для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 	MyPlayerInput->BindAxis("MoveRightLeft", this, &APlayerCharacter::MoveRightLeft); // Назначення клавiш A/D (MoveRightLeft) на перемiщення влiво/вправо для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
-	MyPlayerInput->BindAction("Jump", IE_Pressed, this, &APlayerCharacter::Jump); // Назначення клавiши Space у випадку, якщо вона нажата для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
+	MyPlayerInput->BindAction("Jump", IE_Pressed, this, &APlayerCharacter::Jump); // Назначення клавiши Space у випадку, якщо вона натиснута для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 	MyPlayerInput->BindAction("Jump", IE_Released, this, &APlayerCharacter::StopJump); // Назначення клавiши Space у випадку, якщо вона вiдпущенна для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
-	/*
-	MyPlayerInput->BindAction("Crouch", IE_Pressed, this, &APlayerCharacter::Crouch); //
-	MyPlayerInput->BindAction("StopCrouch", IE_Released, this, &APlayerCharacter::StopCrouch); // 
-	*/
+
+	MyPlayerInput->BindAction("Crouch", IE_Pressed, this, &APlayerCharacter::Crouch); // Назначення клавiши Ctrl у випадку, якщо вона натиснута для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
+	MyPlayerInput->BindAction("Crouch", IE_Released, this, &APlayerCharacter::StopCrouch); // Назначення клавiши Ctrl у випадку, якщо вона вiдпущенна для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 
 	// Миша
 	MyPlayerInput->BindAxis("Turn", this, &APlayerCharacter::AddControllerYawInput); // Назначення перемiщення мишi по осi X (Turn) на перемiщення камери влiво/вправо для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 	MyPlayerInput->BindAxis("LookUpDown", this, &APlayerCharacter::AddControllerPitchInput); // Назначення перемiщення мишi по осi Y (LookUpDown) на перемiщення вверх/вниз для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 
 	// Shift (Бiг)
-	MyPlayerInput->BindAction("Sprint", IE_Pressed, this, &APlayerCharacter::Sprint); // 
-	MyPlayerInput->BindAction("StopSprint", IE_Released, this, &APlayerCharacter::StopSprint); // 
+	MyPlayerInput->BindAction("Sprint", IE_Pressed, this, &APlayerCharacter::Sprint); // Назначення клавiши Shift у випадку, якщо вона натиснута для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
+	MyPlayerInput->BindAction("Sprint", IE_Released, this, &APlayerCharacter::StopSprint); // Назначення клавiши Shift у випадку, якщо вона вiдпущенна для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 
 
 }
@@ -67,7 +66,7 @@ void APlayerCharacter::Jump()
 
 void APlayerCharacter::StopJump()
 {
-	bPressedJump = false; // Якщо Space вiдпещенно - нiчого.
+	bPressedJump = false; // Якщо Space вiдпущенно - нiчого.
 }
 
 
@@ -75,31 +74,41 @@ void APlayerCharacter::StopJump()
 // Бiг
 void APlayerCharacter::Sprint()
 {
+	bIsSprint = true; // true - персонаж бiжить.
+	GetCharacterMovement()->MaxWalkSpeed = 800.0f; // Максимальная швидкiсть при бiгi 800.
+
+	DecreaseStamina();
 }
 
 void APlayerCharacter::StopSprint()
 {
+	bIsSprint = false;
+	GetCharacterMovement()->MaxWalkSpeed = 400.0f; // Максимальная швидкiсть при ходьбi 400.
+
+	IncreaseStamina();
 }
 
-void APlayerCharacter::DeacreaseStamina()
+void APlayerCharacter::Crouch() 
 {
-}
-
-void APlayerCharacter::IncreaseStamina()
-{
-}
-
-
-
-/* 
-void APlayerCharacter::Crouch()
-{
-	ACharacter::Crouch(false);
+	ACharacter::Crouch(false); // Якщо клавiша Ctrl нажато - ciсти.
 }
 
 
 void APlayerCharacter::StopCrouch()
 {
-	ACharacter::Crouch(false);
+	ACharacter::UnCrouch(false); // Якщо клавiша Ctrl вiдпущенно - встати.
 }
-*/
+
+void APlayerCharacter::DecreaseStamina() // функцiя вiднiмання витривалостi.
+{
+	CurrentStamina = Stamina - MinusStamina; // CurrentStamina(значення кiлькостi витривалостi) = Stamina(установленна кiлькiсть наприклад - 100) - MinusStamina(установленна кiлькiсть наприклад - 1) | Формула для вiднiмання витривалостi.
+	Stamina = CurrentStamina; // Повернення значення пiсля обрахунку.
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Stamina Deacreased %f"), Stamina)); // Виклик повiдомлення (-1 - постiйно, коли йде виклик ScreenDebugMessage), (5.f - скiлки секунд буде висіти повiдомлення), (FColor::Red - червоним кольором).
+}
+
+void APlayerCharacter::IncreaseStamina() // функцiя додавання витривалостi.
+{
+	CurrentStamina = Stamina + PlusStamina; // CurrentStamina(значення кiлькостi витривалостi) = Stamina(установленна кiлькiсть наприклад - 100) + PlusStamina(установленна кiлькiсть наприклад - 1) | Формула для додавання витривалостi.
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Stamina Increased %f"), Stamina)); // Виклик повiдомлення (-1 - постiйно, коли йде виклик ScreenDebugMessage), (5.f - скiлки секунд буде висіти повiдомлення), (FColor::Green - зеленим кольором).
+}
