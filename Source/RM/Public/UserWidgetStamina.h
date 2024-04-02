@@ -14,4 +14,10 @@ class RM_API UUserWidgetStamina : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+
+	UFUNCTION(BlueprintCallable, BlueprintPure) // Макрос для виклику функцii в BP
+	float GetCharacterStamina();
+
+
 };

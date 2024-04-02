@@ -13,7 +13,11 @@ UCLASS()
 class RM_API ACharacterHUD : public AHUD
 {
 	GENERATED_BODY()
-	
 
-	/* / Script / UMGEditor.WidgetBlueprint'/Game/Blueprints/WBP_Stamina.WBP_Stamina*/
+public:
+	ACharacterHUD();
+	
+	virtual void BeginPlay() override;
+
+	TSubclassOf<class UUserWidget> MainHUD; // Створення змiнноi, в якiй буде зберiгати class Widget. 
 };
