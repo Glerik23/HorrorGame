@@ -30,6 +30,11 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* MyPlayerInput) override; // [Virtual] Оголошення функцii SetupPlayerInputComponent з class Pawn | оголошення MyPlayerInput з успадкуванням class UInputComponent | [override] перевезначення методу у class-спiдкоэмцi.
 
+	bool bIsDoorDetected;
+
+	// Взаємодiя
+	void Interaction();
+
 	// Перемiщення вперед/назад.
 	void MoveForwardBackward(float Value); // Функцiя перемiщененя вперед/назад.
 

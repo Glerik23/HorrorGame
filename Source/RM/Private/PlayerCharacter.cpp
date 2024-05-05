@@ -3,6 +3,7 @@
 
 #include "PlayerCharacter.h"
 
+
 APlayerCharacter::APlayerCharacter() : Super() {
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent")); // Створення штативу з назвою SpringArmComponent.
@@ -33,6 +34,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* MyPlayerInput)
 	MyPlayerInput->BindAction("Crouch", IE_Released, this, &APlayerCharacter::StopCrouch); // Назначення клавiши Ctrl у випадку, якщо вона вiдпущенна для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 
 	// Миша
+	MyPlayerInput->BindAction("Interaction", IE_Pressed, this, &APlayerCharacter::Interaction);
+
 	MyPlayerInput->BindAxis("Turn", this, &APlayerCharacter::AddControllerYawInput); // Назначення перемiщення мишi по осi X (Turn) на перемiщення камери влiво/вправо для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 	MyPlayerInput->BindAxis("LookUpDown", this, &APlayerCharacter::AddControllerPitchInput); // Назначення перемiщення мишi по осi Y (LookUpDown) на перемiщення вверх/вниз для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 
@@ -42,6 +45,52 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* MyPlayerInput)
 
 
 }
+
+void APlayerCharacter::Interaction()
+{
+	FVector Loc;
+	FRotator Rot;
+	FHitResult Hit;
+
+	GetController()->GetPlayerViewPoint(Loc, Rot);
+
+	FVector Start = Loc;
+	FVector End = Start + (Rot.Vector() * 400); // Длина луча 400 единиц
+
+	FCollisionQueryParams TraceParams;
+
+	GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, TraceParams);
+
+	DrawDebugLine(
+		GetWorld(),
+		Start,
+		End,
+		FColor::Green,
+		false,
+		0.1f,
+		0,
+		3.f
+	);
+
+	if (Hit.bBlockingHit && IsValid(Hit.GetComponent())) // Проверка компонента
+	{
+		UPrimitiveComponent* HitComponent = Hit.GetComponent(); // Получение компонента
+		if (HitComponent->ComponentHasTag("Door"))
+		{
+			UE_LOG(LogTemp, Log, TEXT("Trace hit door component: %s"), *HitComponent->GetName());
+			// ... (код для взаимодействия с дверью)
+		}
+		else
+		{
+			UE_LOG(LogTemp, Log, TEXT("Trace hit actor: %s, but it's not a door"), *HitComponent->GetName());
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("No Actors were hit"));
+	}
+}
+
 
 // Перемiщення вперед/назад/вправо/влiво.
 void APlayerCharacter::MoveForwardBackward(float Value)
