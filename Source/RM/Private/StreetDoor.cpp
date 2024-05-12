@@ -30,6 +30,13 @@ void AStreetDoor::BeginPlay()
 	
 }
 
+void AStreetDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AStreetDoor, bDoorOpen);
+}
+
 void AStreetDoor::OnRep_ToggleDoor()
 {
 	GetWorld()->GetTimerManager().UnPauseTimer(THDoor);
