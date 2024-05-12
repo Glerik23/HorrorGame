@@ -10,6 +10,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "PlayerCharacter.generated.h"
 
+
 /**
  * 
  */
@@ -33,7 +34,7 @@ public:
 	bool bIsDoorDetected;
 
 	// Взаємодiя
-	void Interaction();
+	void Interact();
 
 	// Перемiщення вперед/назад.
 	void MoveForwardBackward(float Value); // Функцiя перемiщененя вперед/назад.

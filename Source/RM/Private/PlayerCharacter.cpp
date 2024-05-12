@@ -34,7 +34,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* MyPlayerInput)
 	MyPlayerInput->BindAction("Crouch", IE_Released, this, &APlayerCharacter::StopCrouch); // Назначення клавiши Ctrl у випадку, якщо вона вiдпущенна для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 
 	// Миша
-	MyPlayerInput->BindAction("Interaction", IE_Pressed, this, &APlayerCharacter::Interaction);
+	MyPlayerInput->BindAction("Interact", IE_Pressed, this, &APlayerCharacter::Interact);
 
 	MyPlayerInput->BindAxis("Turn", this, &APlayerCharacter::AddControllerYawInput); // Назначення перемiщення мишi по осi X (Turn) на перемiщення камери влiво/вправо для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 	MyPlayerInput->BindAxis("LookUpDown", this, &APlayerCharacter::AddControllerPitchInput); // Назначення перемiщення мишi по осi Y (LookUpDown) на перемiщення вверх/вниз для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
@@ -46,7 +46,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* MyPlayerInput)
 
 }
 
-void APlayerCharacter::Interaction()
+void APlayerCharacter::Interact()
 {
 	FVector Loc;
 	FRotator Rot;
