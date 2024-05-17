@@ -2,6 +2,7 @@
 
 
 #include "PlayerCharacter.h"
+#include "StreetDoor.h"
 
 
 APlayerCharacter::APlayerCharacter() : Super() {
@@ -75,14 +76,18 @@ void APlayerCharacter::Interact()
 	if (Hit.bBlockingHit && IsValid(Hit.GetComponent())) // Проверка компонента
 	{
 		UPrimitiveComponent* HitComponent = Hit.GetComponent(); // Получение компонента
-		if (HitComponent->ComponentHasTag("Door"))
+		if (HitComponent->ComponentHasTag("Door")) // Проверка на тег "Door"
 		{
-			UE_LOG(LogTemp, Log, TEXT("Trace hit door component: %s"), *HitComponent->GetName());
-			// ... (код для взаимодействия с дверью)
+			AActor* HitActor = Hit.GetActor(); // Получение актёра, к которому принадлежит компонент
+			if (AStreetDoor* Door = Cast<AStreetDoor>(HitActor)) // Преобразование актёра в AStreetDoor
+			{
+				UE_LOG(LogTemp, Log, TEXT("Trace hit door component: %s"), *HitComponent->GetName());
+				Door->ToggleDoor(); // Вызов функции ToggleDoor
+			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Log, TEXT("Trace hit actor: %s, but it's not a door"), *HitComponent->GetName());
+			UE_LOG(LogTemp, Log, TEXT("Trace hit actor: %s"), *HitComponent->GetName());
 		}
 	}
 	else
@@ -90,6 +95,7 @@ void APlayerCharacter::Interact()
 		UE_LOG(LogTemp, Log, TEXT("No Actors were hit"));
 	}
 }
+
 
 
 // Перемiщення вперед/назад/вправо/влiво.

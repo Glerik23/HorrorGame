@@ -25,13 +25,16 @@ protected:
 	UPROPERTY(EditAnywhere)
 		FRotator OpenRotation;
 	
-	FRotator ClosedRotation;
+	UPROPERTY(EditAnywhere)
+		FRotator ClosedRotation;
 
 	FTimerHandle THDoor;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+
 
 	UFUNCTION()
 		void OnRep_ToggleDoor();

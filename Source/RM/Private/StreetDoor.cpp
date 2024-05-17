@@ -3,7 +3,7 @@
 
 #include "StreetDoor.h"
 #include "Components/StaticMeshComponent.h"
-#include "Net/UnrealNetwork.h"
+//#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AStreetDoor::AStreetDoor()
@@ -25,31 +25,28 @@ void AStreetDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//ClosedRotation = this->GetActorRotation();
+
 	GetWorld()->GetTimerManager().SetTimer(THDoor, this, &AStreetDoor::RotateDoor, 0.1f, true);
 	GetWorld()->GetTimerManager().PauseTimer(THDoor);
 	
 }
 
-void AStreetDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+/*void AStreetDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AStreetDoor, bDoorOpen);
-}
-
-void AStreetDoor::OnRep_ToggleDoor()
-{
-	GetWorld()->GetTimerManager().UnPauseTimer(THDoor);
-}
+}*/
 
 void AStreetDoor::RotateDoor()
 {
-	if (bDoorOpen) 
+	if (bDoorOpen)
 	{
 		this->SetActorRotation(OpenRotation);
 		GetWorld()->GetTimerManager().PauseTimer(THDoor);
 	}
-	else 
+	else
 	{
 		this->SetActorRotation(ClosedRotation);
 		GetWorld()->GetTimerManager().PauseTimer(THDoor);
@@ -57,8 +54,19 @@ void AStreetDoor::RotateDoor()
 
 }
 
+void AStreetDoor::OnRep_ToggleDoor()
+{
+	GetWorld()->GetTimerManager().UnPauseTimer(THDoor);
+}
+
 void AStreetDoor::ToggleDoor()
 {
 	bDoorOpen = !bDoorOpen;
 	OnRep_ToggleDoor();
+	if (bDoorOpen) {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Door open")));
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Door closed")));
+	}
 }
