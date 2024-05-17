@@ -6,7 +6,7 @@
 
 ACharacterHUD::ACharacterHUD() : Super() // Ѕазова реалiзацi€ | успадкуванн€ вiд базового класу HUD.
 {
-	ConstructorHelpers::FClassFinder<UUserWidget> WBPStamina(TEXT("/Game/Blueprints/WBP_Stamina")); // ”казанн€ де знаходитьс€ WPStamina.
+	ConstructorHelpers::FClassFinder<UUserWidget> WBPStamina(TEXT("/Game/Blueprints/HUD/WBP_Stamina")); // ”казанн€ де знаходитьс€ WPStamina.
 
 	MainHUD = WBPStamina.Class; // «мiнна з class Widget = WBPStamina.
 
