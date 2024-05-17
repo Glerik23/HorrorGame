@@ -3,7 +3,7 @@
 
 #include "StreetDoor.h"
 #include "Components/StaticMeshComponent.h"
-//#include "Net/UnrealNetwork.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AStreetDoor::AStreetDoor()
@@ -32,12 +32,12 @@ void AStreetDoor::BeginPlay()
 	
 }
 
-/*void AStreetDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void AStreetDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AStreetDoor, bDoorOpen);
-}*/
+}
 
 void AStreetDoor::RotateDoor()
 {
