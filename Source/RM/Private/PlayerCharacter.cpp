@@ -3,6 +3,11 @@
 
 #include "PlayerCharacter.h"
 #include "StreetDoor.h"
+#include "LineTrace.h"
+#include "GameFramework/Actor.h"
+#include "Pickups.h"
+
+
 
 
 APlayerCharacter::APlayerCharacter() : Super() {
@@ -19,6 +24,8 @@ APlayerCharacter::APlayerCharacter() : Super() {
 	SpringArm->bUsePawnControlRotation = true; // Використовувати керування штативом для камери.
 	Camera->bUsePawnControlRotation = false; // Не використовувати керуванняч камерою на пряму.
 
+	LineTraceComp = CreateDefaultSubobject<ULineTrace>("LineTraceComponent");
+
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* MyPlayerInput){ // Прив'язання управлiння.
@@ -34,9 +41,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* MyPlayerInput)
 	MyPlayerInput->BindAction("Crouch", IE_Pressed, this, &APlayerCharacter::Crouch); // Назначення клавiши Ctrl у випадку, якщо вона натиснута для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 	MyPlayerInput->BindAction("Crouch", IE_Released, this, &APlayerCharacter::StopCrouch); // Назначення клавiши Ctrl у випадку, якщо вона вiдпущенна для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 
-	// Миша
 	MyPlayerInput->BindAction("Interact", IE_Pressed, this, &APlayerCharacter::Interact);
 
+	// Миша
 	MyPlayerInput->BindAxis("Turn", this, &APlayerCharacter::AddControllerYawInput); // Назначення перемiщення мишi по осi X (Turn) на перемiщення камери влiво/вправо для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 	MyPlayerInput->BindAxis("LookUpDown", this, &APlayerCharacter::AddControllerPitchInput); // Назначення перемiщення мишi по осi Y (LookUpDown) на перемiщення вверх/вниз для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 
@@ -51,48 +58,31 @@ void APlayerCharacter::Interact()
 {
 	FVector Loc;
 	FRotator Rot;
-	FHitResult Hit;
-
 	GetController()->GetPlayerViewPoint(Loc, Rot);
 
 	FVector Start = Loc;
-	FVector End = Start + (Rot.Vector() * 400); // Длина луча 400 единиц
+	FVector End = Start + (Rot.Vector() * 400); // Длина луча 400 единиц     FVector End = Camera->GetForwardVector() * 50.0f; /*if (Hit.bBlockingHit && IsValid(Hit.GetComponent())) // Проверка компонента*/
+	AActor* Actor = LineTraceComp->LineTraceSingle(Start, End, true);
 
-	FCollisionQueryParams TraceParams;
-
-	GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, TraceParams);
-
-	DrawDebugLine(
-		GetWorld(),
-		Start,
-		End,
-		FColor::Green,
-		false,
-		0.1f,
-		0,
-		3.f
-	);
-
-	if (Hit.bBlockingHit && IsValid(Hit.GetComponent())) // Проверка компонента
+	if (Actor) 
 	{
-		UPrimitiveComponent* HitComponent = Hit.GetComponent(); // Получение компонента
-		if (HitComponent->ComponentHasTag("Door")) // Проверка на тег "Door"
+		UE_LOG(LogTemp, Warning, TEXT("Hit actor: %s"), *Actor->GetName());
+
+		if (APickups* Pickup = Cast<APickups>(Actor)) {
+			UE_LOG(LogTemp, Warning, TEXT("Actor is a pickup"));
+
+		}
+
+
+		UPrimitiveComponent* HitComponent = Actor->FindComponentByClass<UPrimitiveComponent>();
+		if (HitComponent && HitComponent->ComponentHasTag("Door"))
 		{
-			AActor* HitActor = Hit.GetActor(); // Получение актёра, к которому принадлежит компонент
-			if (AStreetDoor* Door = Cast<AStreetDoor>(HitActor)) // Преобразование актёра в AStreetDoor
+			if (AStreetDoor* Door = Cast<AStreetDoor>(Actor))
 			{
-				UE_LOG(LogTemp, Log, TEXT("Trace hit door component: %s"), *HitComponent->GetName());
-				Door->ToggleDoor(); // Вызов функции ToggleDoor
+				UE_LOG(LogTemp, Log, TEXT("Trace hit door component: %s"), *Actor->GetName());
+				Door->ToggleDoor();
 			}
 		}
-		else
-		{
-			UE_LOG(LogTemp, Log, TEXT("Trace hit actor: %s"), *HitComponent->GetName());
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("No Actors were hit"));
 	}
 }
 
