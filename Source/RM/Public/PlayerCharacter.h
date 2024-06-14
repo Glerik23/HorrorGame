@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Math/UnrealMathUtility.h"
+#include "PlayerInventory.h"
 #include "PlayerCharacter.generated.h"
 
 
@@ -28,13 +29,31 @@ public:
 	UPROPERTY(VisibleAnywhere) // Макрос, щоб бачити та редагувати в BP.
 		UCameraComponent* Camera; // Камера.
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+		TSubclassOf<UUserWidget> InventoryWidgetClass;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* MyPlayerInput) override; // [Virtual] Оголошення функцii SetupPlayerInputComponent з class Pawn | оголошення MyPlayerInput з успадкуванням class UInputComponent | [override] перевезначення методу у class-спiдкоэмцi.
+	UPROPERTY(Transient)
+		UUserWidget* InventoryWidget;
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* MyPlayerInput) override; // [Virtual] Оголошення функцii SetupPlayerInputComponent з class Pawn | оголошення MyPlayerInput з успадкуванням class UInputComponent | [override] перевизначення методу у class-спiдкоэмцi.
 	
+	UFUNCTION(BlueprintCallable)
+		class UInventory* GetInventoryComp();
+
 	class ULineTrace* LineTraceComp;
+
+	class UInventory* Inventory;
+
+	bool bCameraRotate;
 	
 	// Взаємодiя
 	void Interact();
+
+	void InventoryOpen();
+
+	bool bIsInventoryOpen;
+
+	void SetCursorVisibility(bool bVisible);
 
 	// Перемiщення вперед/назад.
 	void MoveForwardBackward(float Value); // Функцiя перемiщененя вперед/назад.
@@ -50,7 +69,7 @@ public:
 	void Sprint(); // Функцiя бiгу.
 	void StopSprint(); // Функцiя зупинки бiгу.
 
-	void Crouch();
+	void Crouch();  // Fix (реалiзацiя через (virtual void Crouch(bool bClientSimulation) override;)) та (Super::Crouch(bClientSimulation);)
 	void StopCrouch();
 
 	bool bIsSprint; // Бiжить/не бiжить.
@@ -62,7 +81,7 @@ public:
 	float PlusStamina = 0.1f; // Кількість дадавання до CurrentStamina при при ходьбі.
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stamina") // Вiдображення MinusStamina в Default в BP(для редагування).
-	float MinusStamina = 0.2f; // Кількість забирання від CurrentStamina при бігу.
+	float MinusStamina = 0.2f; // Кількість забирання від CurrentSamina при бігу.
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stamina") // Вiдображення CurrentStamina в Default в BP(для редагування).
 	float CurrentStamina; // Змiнна яка зберiгаэ значення стамiни.

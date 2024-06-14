@@ -19,11 +19,20 @@ protected:
 	UPROPERTY(EditAnywhere)
 		class UStaticMeshComponent* MeshComp;
 
+	UPROPERTY(EditAnywhere)
+		class UTexture2D* Icon;
+
 protected:
 	// Called when the game starts or when 
 	virtual void BeginPlay() override;
 
+	void DestroyActor();
+
 public:
 
+	// Підйом об'єкту
+	void UseItem(class APlayerCharacter* Player);
 
+	UFUNCTION(BlueprintCallable)
+	class UTexture2D* GetItemIcon();
 };

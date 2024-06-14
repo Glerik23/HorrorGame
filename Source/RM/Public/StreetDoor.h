@@ -19,8 +19,11 @@ protected:
 	UPROPERTY(EditAnywhere)
 		class UStaticMeshComponent* MeshComp;
 	
-	UPROPERTY(ReplicatedUsing = OnRep_ToggleDoor)
+	UPROPERTY(EditAnywhere)
 		bool bDoorOpen;
+
+	UPROPERTY(EditAnywhere)
+		bool bDoorLocked;
 
 	UPROPERTY(EditAnywhere)
 		FRotator OpenRotation;
@@ -33,11 +36,6 @@ protected:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-
-
-	UFUNCTION()
-		void OnRep_ToggleDoor();
 	
 	void RotateDoor();
 

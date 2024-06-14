@@ -11,3 +11,10 @@ APlayerGameMode::APlayerGameMode() : Super() {
 	HUDClass = ACharacterHUD::StaticClass(); // HUD за замовчуванням.
 
 }
+
+// Respawn
+
+/*void APlayerGameMode::Respawn(AController* Controller) {
+
+	UE_LOG(LogTemp, Warning, TEXT("Respawn"));
+}*/

@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "Inventory.h"
 #include "StreetDoor.h"
+#include "PlayerCharacter.h"
 #include "Components/StaticMeshComponent.h"
-#include "Net/UnrealNetwork.h"
+
 
 // Sets default values
 AStreetDoor::AStreetDoor()
@@ -16,8 +17,9 @@ AStreetDoor::AStreetDoor()
 
 	OpenRotation = FRotator::ZeroRotator;
 	ClosedRotation = FRotator::ZeroRotator;
-	bDoorOpen = false;
 
+	bDoorOpen = false;
+	bDoorLocked = false;
 }
 
 // Called when the game starts or when spawned
@@ -32,41 +34,36 @@ void AStreetDoor::BeginPlay()
 	
 }
 
-void AStreetDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AStreetDoor, bDoorOpen);
-}
-
 void AStreetDoor::RotateDoor()
 {
 	if (bDoorOpen)
 	{
 		this->SetActorRotation(OpenRotation);
 		GetWorld()->GetTimerManager().PauseTimer(THDoor);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Door open")));
 	}
 	else
 	{
 		this->SetActorRotation(ClosedRotation);
 		GetWorld()->GetTimerManager().PauseTimer(THDoor);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Door closed")));
 	}
 
 }
 
-void AStreetDoor::OnRep_ToggleDoor()
-{
-	GetWorld()->GetTimerManager().UnPauseTimer(THDoor);
-}
 
 void AStreetDoor::ToggleDoor()
 {
-	bDoorOpen = !bDoorOpen;
-	OnRep_ToggleDoor();
-	if (bDoorOpen) {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Door open")));
+	if (bDoorLocked) 
+	{
+		/*if (UInventory* PlayersInventory = Player->GetInventoryComponent())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("GOT INVENTORY COMPONENT"));
+		}*/
 	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Door closed")));
+	else
+	{
+	bDoorOpen = !bDoorOpen;
+	GetWorld()->GetTimerManager().UnPauseTimer(THDoor);
 	}
 }

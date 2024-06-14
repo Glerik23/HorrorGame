@@ -6,6 +6,9 @@
 #include "LineTrace.h"
 #include "GameFramework/Actor.h"
 #include "Pickups.h"
+#include "PlayerGameMode.h"
+#include "Inventory.h"
+#include "PlayerInventory.h"
 
 
 
@@ -25,7 +28,11 @@ APlayerCharacter::APlayerCharacter() : Super() {
 	Camera->bUsePawnControlRotation = false; // Не використовувати керуванняч камерою на пряму.
 
 	LineTraceComp = CreateDefaultSubobject<ULineTrace>("LineTraceComponent");
+	Inventory = CreateDefaultSubobject<UInventory>("InventoryComponent");
 
+	bIsInventoryOpen = false;
+
+	bCameraRotate = true;
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* MyPlayerInput){ // Прив'язання управлiння.
@@ -43,9 +50,16 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* MyPlayerInput)
 
 	MyPlayerInput->BindAction("Interact", IE_Pressed, this, &APlayerCharacter::Interact);
 
+	MyPlayerInput->BindAction("InventoryOpen", IE_Pressed, this, &APlayerCharacter::InventoryOpen);
+
 	// Миша
+	//if (bCameraRotate){
 	MyPlayerInput->BindAxis("Turn", this, &APlayerCharacter::AddControllerYawInput); // Назначення перемiщення мишi по осi X (Turn) на перемiщення камери влiво/вправо для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
 	MyPlayerInput->BindAxis("LookUpDown", this, &APlayerCharacter::AddControllerPitchInput); // Назначення перемiщення мишi по осi Y (LookUpDown) на перемiщення вверх/вниз для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
+	/* }
+	else {
+		InputComponent->AxisBindings.Empty();
+	}*/
 
 	// Shift (Бiг)
 	MyPlayerInput->BindAction("Sprint", IE_Pressed, this, &APlayerCharacter::Sprint); // Назначення клавiши Shift у випадку, якщо вона натиснута для PlayerCharacter (вказання яким об'эктом буде здiйснятися управлiння).
@@ -53,6 +67,53 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* MyPlayerInput)
 
 
 }
+
+void APlayerCharacter::SetCursorVisibility(bool bVisible)
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+	PlayerController->bShowMouseCursor = bVisible;
+}
+
+UInventory* APlayerCharacter::GetInventoryComp()
+{
+	return Inventory;
+}
+
+
+void APlayerCharacter::InventoryOpen()
+{
+	if (bIsInventoryOpen)
+	{
+		bIsInventoryOpen = false;
+		InventoryWidget->RemoveFromParent();
+
+		SetCursorVisibility(false);
+
+		//bCameraRotate = true;
+	}
+	else 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Inventory open"));
+		bIsInventoryOpen = true;
+
+		//bCameraRotate = false;
+
+		if (InventoryWidgetClass != nullptr)
+		{
+			InventoryWidget = CreateWidget<UUserWidget>(GetWorld(), InventoryWidgetClass);
+			
+			SetCursorVisibility(true);
+
+		}
+
+		if (InventoryWidget)
+		{
+			InventoryWidget->AddToViewport();
+		}
+	}
+}
+
 
 void APlayerCharacter::Interact()
 {
@@ -69,8 +130,11 @@ void APlayerCharacter::Interact()
 		UE_LOG(LogTemp, Warning, TEXT("Hit actor: %s"), *Actor->GetName());
 
 		if (APickups* Pickup = Cast<APickups>(Actor)) {
+
 			UE_LOG(LogTemp, Warning, TEXT("Actor is a pickup"));
 
+			Inventory->AddItem(Pickup);
+			Pickup->UseItem(this);
 		}
 
 
@@ -85,6 +149,7 @@ void APlayerCharacter::Interact()
 		}
 	}
 }
+
 
 
 
@@ -182,7 +247,7 @@ void APlayerCharacter::Tick(float DeltaTime) // Дii, якi вiдбуваются за 1 iгрови
 		}
 	}
 
-	// Умови, щоб витривалiсть не пiшла в мiнус.
+	// Умова, щоб витривалiсть не пiшла в мiнус.
 	if (bIsSprint == true && Stamina < 100) { // Якщо кнопка бiгу натиснута, та витривалiсть меньше 100.
 		if (CurrentStamina - PlusStamina <= 0) { // Якщо загальне значення - додавання витривалостi <= 0.
 			StopSprint(); // Зупинити бiг.

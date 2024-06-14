@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Pickups.h"
 #include "Inventory.generated.h"
 
 
@@ -17,9 +18,22 @@ public:
 	UInventory();
 
 protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
+		TArray<APickups*> Items;
+
+protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:	
 
+	UFUNCTION(BlueprintCallable)
+		TArray<class APickups*> GetInventoryItems();
+
+	UFUNCTION(BlueprintCallable)
+		int32 GetCurrentInventoryCount();
+
+	bool AddItem(class APickups* Item);
+	void RemoveItem(class APickups* Item);
 };
